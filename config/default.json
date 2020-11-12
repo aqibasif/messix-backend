@@ -2,5 +2,5 @@
   "jwtPrivateKey": "unsecureKey",
   "db": "mongodb://localhost/beverix",
   "port": "3800",
-  "requiresAuth": true
+  "requiresAuth": false
 }
