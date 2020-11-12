@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const multer = require('multer');
 const app = express();
+const router = express.Router();
 
 // app.use(express.static(__dirname + '../../Beverix-app/fyp/public/uploads'));
 
@@ -43,7 +44,6 @@ const app = express();
 //   fileFilter: fileFilter,
 // });
 
-// const router = express.Router();
 
 // router.post('/',  upload.single('photo'),  (req, res, next) => {
  
