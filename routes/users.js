@@ -133,10 +133,10 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 router.post('/forgotpasswordlink/:email', async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
-  
+
   if (req.params.email === '') {
     res.status(400).send('email required');
   }
@@ -155,6 +155,8 @@ router.post('/forgotpasswordlink/:email', async (req, res) => {
         resetPasswordToken: token,
         resetPasswordExpires: Date.now() + 3600000,
       });
+
+      console.log(keys.email);
 
       const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -190,8 +192,7 @@ router.post('/forgotpasswordlink/:email', async (req, res) => {
 
 router.get('/reset/:resetPasswordToken', async (req, res) => {
   // console.log(Op.gt);
-  
-  
+
   const user = await User.findOne({
     resetPasswordToken: req.params.resetPasswordToken,
     // resetPasswordExpires: {
