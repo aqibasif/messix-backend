@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const { User, validate } = require('../models/user');
 const express = require('express');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const moment = require('moment');
 const router = express.Router();
 
@@ -87,7 +89,6 @@ router.put('/:id', auth, async (req, res) => {
   const { error } = validate(req.body);
 
   if (error) {
-    
     return res.status(400).send(error.details[0].message);
   }
 
@@ -101,6 +102,7 @@ router.put('/:id', auth, async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password, salt);
   }
 
+
   user = await User.findByIdAndUpdate(
     req.params.id,
     {
@@ -113,7 +115,6 @@ router.put('/:id', auth, async (req, res) => {
       city: req.body.city,
       country: req.body.country,
       postalCode: req.body.postalCode,
-
     },
     { new: true }
   );
@@ -129,6 +130,84 @@ router.put('/:id', auth, async (req, res) => {
     .header('x-auth-token', token)
     .header('access-control-expose-headers', 'x-auth-token')
     .send(user);
+});
+
+router.post('/forgotpasswordlink/:email', async (req, res) => {
+  if (req.params.email === '') {
+    res.status(400).send('email required');
+  }
+
+  console.error(req.params.email);
+
+  await User.findOne({
+    email: req.params.email,
+  }).then(async (user) => {
+    if (user === null) {
+      console.error('email not in database');
+      res.status(403).send('email not in db');
+    } else {
+      const token = crypto.randomBytes(20).toString('hex');
+      await user.update({
+        resetPasswordToken: token,
+        resetPasswordExpires: Date.now() + 3600000,
+      });
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'aqibasif4422@gmail.com',
+          pass: `03124401766`,
+        },
+      });
+
+      const mailOptions = {
+        from: 'aqibasif4422@gamil.com',
+        to: `${user.email}`,
+        subject: 'Link to reset password (Beverix)',
+        text:
+          'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+          'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
+          `https://beverix.herokuapp.com/reset/${token}\n\n` +
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' +
+          'Beverix!',
+      };
+
+      transporter.sendMail(mailOptions, (err, response) => {
+        if (err) {
+          console.error('there was an error: ', err);
+        } else {
+          console.log('here is the res: ', response);
+          res.status(200).json('recovery email sent');
+        }
+      });
+    }
+  });
+});
+
+router.get('/reset/:resetPasswordToken', async (req, res) => {
+  // console.log(Op.gt);
+  const user = await User.findOne({
+    resetPasswordToken: req.params.resetPasswordToken,
+    // resetPasswordExpires: {
+    //   [Op.gt]: Date.now(),
+    // },
+  });
+
+  if (user === null) {
+    console.error('password reset link is invalid or has expired');
+    res.status(403).send('password reset link is invalid or has expired');
+  } else {
+    const expiry = user.resetPasswordExpires;
+    if (expiry < Date.now()) {
+      console.error(expiry + '+ ' + Date.now() + '+ ' + expiry < Date.now());
+      res.status(404).send('password reset link is invalid or has expired');
+    }
+
+    res.status(200).send({
+      user: user,
+      message: 'password reset link a-ok',
+    });
+  }
 });
 
 module.exports = router;

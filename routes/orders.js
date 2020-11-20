@@ -15,22 +15,6 @@ router.get('/', async (req, res) => {
   res.send(orders);
 });
 
-// router.post('/payments', async (req, res) => {
-//   try {
-//     const { amount } = req.body;
-//     console.log(amount);
-
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount,
-//       currency: 'pkr',
-//     });
-
-//     res.status(200).send(paymentIntent.client_secret);
-//   } catch (error) {
-//     res.status(500).json({ statusCode: 500, message: err.message });
-//   }
-// });
-
 router.post('/', [auth], async (req, res) => {
   const orderBody = req.body;
   let payment = [];

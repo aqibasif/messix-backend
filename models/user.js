@@ -39,6 +39,8 @@ const userSchema = new mongoose.Schema({
     maxlength: 50000,
   },
   isAdmin: Boolean,
+  resetPasswordToken: {type: String},
+  resetPasswordExpires: {type: Date},
 });
 
 userSchema.methods.generateAuthToken = function () {
