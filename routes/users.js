@@ -133,6 +133,10 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 router.post('/forgotpasswordlink/:email', async (req, res) => {
+
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+
   if (req.params.email === '') {
     res.status(400).send('email required');
   }
@@ -143,8 +147,8 @@ router.post('/forgotpasswordlink/:email', async (req, res) => {
     email: req.params.email,
   }).then(async (user) => {
     if (user === null) {
-      console.error('email not in database');
-      res.status(403).send('email not in db');
+      console.error('Email not in database');
+      res.status(403).send('Email not in db');
     } else {
       const token = crypto.randomBytes(20).toString('hex');
       await user.update({
@@ -186,6 +190,8 @@ router.post('/forgotpasswordlink/:email', async (req, res) => {
 
 router.get('/reset/:resetPasswordToken', async (req, res) => {
   // console.log(Op.gt);
+  
+  
   const user = await User.findOne({
     resetPasswordToken: req.params.resetPasswordToken,
     // resetPasswordExpires: {
