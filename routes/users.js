@@ -133,10 +133,10 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 router.post('/forgotpasswordlink/:email', async (req, res) => {
-
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Content-Type");
-
+  next();
+  
   if (req.params.email === '') {
     res.status(400).send('email required');
   }
