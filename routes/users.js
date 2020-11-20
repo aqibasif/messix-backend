@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const moment = require('moment');
 const router = express.Router();
+const keys = require('../config/dev');
 
 router.get('/me', auth, async (req, res) => {
   const user = await User.findById(req.user._id).select('-password');
@@ -102,7 +103,6 @@ router.put('/:id', auth, async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password, salt);
   }
 
-
   user = await User.findByIdAndUpdate(
     req.params.id,
     {
@@ -155,8 +155,8 @@ router.post('/forgotpasswordlink/:email', async (req, res) => {
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'aqibasif4422@gmail.com',
-          pass: `03124401766`,
+          user: keys.email,
+          pass: keys.password,
         },
       });
 
