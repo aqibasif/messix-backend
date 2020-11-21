@@ -138,7 +138,7 @@ router.post('/forgotpasswordlink', async (req, res) => {
     res.status(400).send('email required');
   }
 
-  console.error(req.body.email);
+  res.status(400).send(keys.email);
 
   await User.findOne({
     email: req.body.email,
