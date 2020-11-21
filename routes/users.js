@@ -171,11 +171,11 @@ router.post('/forgotpasswordlink', async (req, res) => {
       'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' +
       'Beverix!',
     };
-    res.status(200).send(mailOptions);
     
     transporter.sendMail(mailOptions, (err, response) => {
       if (err) {
         console.error('there was an error: ', err);
+        res.status(200).send(err);
       } else {
         console.log('here is the res: ', response);
         res.status(200).json('recovery email sent');
