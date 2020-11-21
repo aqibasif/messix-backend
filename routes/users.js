@@ -132,16 +132,17 @@ router.put('/:id', auth, async (req, res) => {
     .send(user);
 });
 
-router.post('/forgotpasswordlink/:email', async (req, res) => {
+router.post('/forgotpasswordlink/', async (req, res) => {
 
-  if (req.params.email === '') {
+
+  if (req.body.email === '') {
     res.status(400).send('email required');
   }
 
-  console.error(req.params.email);
+  console.error(req.body.email);
 
   await User.findOne({
-    email: req.params.email,
+    email: req.body.email,
   }).then(async (user) => {
     if (user === null) {
       console.error('Email not in database');
