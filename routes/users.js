@@ -11,10 +11,19 @@ const keys = require('../config/dev');
 var app = express();
 var cors = require('cors');
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
+app.use(cors());
+
+app.use(function(req, res, next) {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST');
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+   next();
 });
+
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   next();
+// });
 
 router.get('/me', auth, async (req, res) => {
   const user = await User.findById(req.user._id).select('-password');
@@ -139,27 +148,7 @@ router.put('/:id', auth, async (req, res) => {
     .send(user);
 });
 
-// app.use(function (req, res, next) {
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-//   res.setHeader('Access-Control-Allow-Credentials', true);
-//   next();
-// });
-
-// app.use(cors({
-//   'allowedHeaders': ['sessionId', 'Content-Type'],
-//   'exposedHeaders': ['sessionId'],
-//   'origin': '*',
-//   'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//   'preflightContinue': false
-// }));
-
 router.post('/forgotpasswordlink/:email', async (req, res) => {
-  // res.setHeader('Access-Control-Allow-Origin', 'https://beverix.herokuapp.com/');
-  // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
-  // res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
-  // res.setHeader('Access-Control-Allow-Credentials', true); // If needed
 
   if (req.params.email === '') {
     res.status(400).send('email required');
