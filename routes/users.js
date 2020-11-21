@@ -132,6 +132,7 @@ router.put('/:id', auth, async (req, res) => {
     .send(user);
 });
 
+
 router.post('/forgotpasswordlink/:email', async (req, res) => {
   if (req.params.email === '') {
     res.status(400).send('email required');
@@ -180,9 +181,9 @@ router.post('/forgotpasswordlink/:email', async (req, res) => {
         } else {
           console.log('here is the res: ', response);
           res.status(200).json('recovery email sent');
-          res.header('Access-Control-Allow-Origin', '*');
-          res.header('Access-Control-Allow-Headers', 'Content-Type');
-          next();
+          // res.header('Access-Control-Allow-Origin', '*');
+          // res.header('Access-Control-Allow-Headers', 'Content-Type');
+          // next();
         }
       });
     }
