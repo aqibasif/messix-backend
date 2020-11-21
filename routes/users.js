@@ -145,15 +145,12 @@ router.post('/forgotpasswordlink', async (req, res) => {
     console.error('Email not in database');
     res.status(403).send('Email not in db');
   } else {
-    
     const token = crypto.randomBytes(20).toString('hex');
     await user.updateOne({
       resetPasswordToken: token,
       resetPasswordExpires: Date.now() + 3600000,
     });
-    
-    res.status(200).send(user);
-    
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -161,7 +158,9 @@ router.post('/forgotpasswordlink', async (req, res) => {
         pass: keys.password,
       },
     });
-    
+
+    res.status(200).send('transporter');
+
     const mailOptions = {
       from: 'aqibasif4422@gamil.com',
       to: `${user.email}`,
