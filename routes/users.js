@@ -133,61 +133,63 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 router.post('/forgotpasswordlink', async (req, res) => {
-
   if (req.body.email === '') {
     res.status(400).send('email required');
   }
 
-  res.status(400).send(keys.email);
-
-  await User.findOne({
+  
+  const user = await User.findOne({
     email: req.body.email,
-  }).then(async (user) => {
-    if (user === null) {
-      console.error('Email not in database');
-      res.status(403).send('Email not in db');
-    } else {
-      const token = crypto.randomBytes(20).toString('hex');
-      await user.update({
-        resetPasswordToken: token,
-        resetPasswordExpires: Date.now() + 3600000,
-      });
-
-      console.log(keys.email);
-
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: keys.email,
-          pass: keys.password,
-        },
-      });
-
-      const mailOptions = {
-        from: 'aqibasif4422@gamil.com',
-        to: `${user.email}`,
-        subject: 'Link to reset password (Beverix)',
-        text:
-          'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-          'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
-          `https://beverix.herokuapp.com/reset/${token}\n\n` +
-          'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' +
-          'Beverix!',
-      };
-
-      transporter.sendMail(mailOptions, (err, response) => {
-        if (err) {
-          console.error('there was an error: ', err);
-        } else {
-          console.log('here is the res: ', response);
-          res.status(200).json('recovery email sent');
-          // res.header('Access-Control-Allow-Origin', '*');
-          // res.header('Access-Control-Allow-Headers', 'Content-Type');
-          // next();
-        }
-      });
-    }
   });
+  
+  
+  if (user === null) {
+    console.error('Email not in database');
+    res.status(403).send('Email not in db');
+  } else {
+    res.status(200).send(user);
+
+    
+    const token = crypto.randomBytes(20).toString('hex');
+    await user.update({
+      resetPasswordToken: token,
+      resetPasswordExpires: Date.now() + 3600000,
+    });
+
+    console.log(keys.email);
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: keys.email,
+        pass: keys.password,
+      },
+    });
+
+    const mailOptions = {
+      from: 'aqibasif4422@gamil.com',
+      to: `${user.email}`,
+      subject: 'Link to reset password (Beverix)',
+      text:
+        'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+        'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
+        `https://beverix.herokuapp.com/reset/${token}\n\n` +
+        'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' +
+        'Beverix!',
+    };
+
+    transporter.sendMail(mailOptions, (err, response) => {
+      if (err) {
+        console.error('there was an error: ', err);
+      } else {
+        console.log('here is the res: ', response);
+        res.status(200).json('recovery email sent');
+        // res.header('Access-Control-Allow-Origin', '*');
+        // res.header('Access-Control-Allow-Headers', 'Content-Type');
+        // next();
+      }
+    });
+  }
 });
 
 router.get('/reset/:resetPasswordToken', async (req, res) => {
