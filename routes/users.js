@@ -163,11 +163,11 @@ router.post('/forgotpasswordlink', async (req, res) => {
     const mailOptions = {
       from: 'aqibasif4422@gamil.com',
       to: `${user.email}`,
-      subject: 'Link to reset password (Beverix)',
+      subject: 'BEVERIX - Link to reset password',
       text:
       'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
       'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
-      `https://beverix.herokuapp.com/reset/${token}\n\n` +
+      `https://beverix.vercel.app/reset/${token}\n\n` +
       'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' +
       'Beverix!',
     };
