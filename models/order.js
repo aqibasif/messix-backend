@@ -8,19 +8,16 @@ const Order = mongoose.model(
   new mongoose.Schema({
     userId: { type: String, trim: true },
     name: { type: String, trim: true },
-    useremail: {
-      type: String,
-      unique: false,
-    },
-    profilePic: { type: String, trim: true },
-    address: { type: String, trim: true },
-    city: { type: String, trim: true },
-    country: { type: String, trim: true },
-    postalCode: { type: String, trim: true },
+    email: { type: String, unique: false },
     phone: { type: String, trim: true },
-    paymentMethod: { type: String, trim: true },
-    cartItems: { type: Array, default: [] },
+    brandId: { type: String, trim: true },
+    bundleName: { type: String, trim: true },
+    bundleId: { type: String, trim: true },
+    brandCategory: { type: String, trim: true },
+    offerPrice: { type: String, trim: true },
+    offerDetail: { type: String, trim: true },
     orderStatus: { type: String, trim: true },
+    coupon: { type: String, trim: true, unique: true },
 
     publishDate: {
       type: String,
@@ -34,16 +31,16 @@ function validateOrder(order) {
   const schema = {
     userId: Joi.string().required(),
     name: Joi.string().required(),
-    useremail: Joi.string().required(),
-    profilePic: Joi.string().required(),
-    address: Joi.string().required(),
-    city: Joi.string().required(),
-    country: Joi.string().required(),
-    postalCode: Joi.string().required(),
+    email: Joi.string().required(),
     phone: Joi.string().required(),
-    paymentMethod: Joi.string().required(),
+    brandId: Joi.string().required(),
+    bundleId: Joi.string().required(),
+    bundleName: Joi.string().required(),
+    brandCategory: Joi.string().required(),
+    offerPrice: Joi.string().required(),
+    offerDetail: Joi.string().required(),
     orderStatus: Joi.string().required(),
-    cartItems: Joi.array().required(),
+    coupon: Joi.string().required(),
   };
 
   return Joi.validate(order, schema);

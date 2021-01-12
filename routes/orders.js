@@ -7,8 +7,30 @@ const express = require('express');
 const router = express.Router();
 const Stripe = require('stripe');
 const keys = require('../config/dev');
+const nodemailer = require('nodemailer');
 
 const stripe = new Stripe(keys.stripeSecret);
+
+generateCoupon = (length) => {
+  var random_string = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSRTUVWXYZ0123456789';
+
+  for (var i = 0; i < length; i++) {
+    random_string += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
+  }
+
+  return random_string;
+};
+
+getUniqueCoupon = async () => {
+  var coupon = generateCoupon(6);
+  let isExisting = await Order.findOne({ coupon: coupon });
+
+  if (isExisting) return getUniqueCoupon();
+  else return coupon;
+};
 
 router.get('/', async (req, res) => {
   const orders = await Order.find().select('-__v');
@@ -17,37 +39,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', [auth], async (req, res) => {
   const orderBody = req.body;
-  let payment = [];
-  const amount = orderBody.total * 100;
-
-  if (orderBody.paymentMethod === 'credit card') {
-    try {
-      payment = await stripe.paymentIntents.create({
-        amount,
-        currency: 'PKR',
-        description: 'Beverix Sale',
-        payment_method: orderBody.paymentId,
-        confirm: true,
-      });
-
-      const p = payment.charges.data[0].payment_method_details.card;
-
-      orderBody.paymentMethod =
-        'credit card + ' +
-        payment.id +
-        ' + ' +
-        p.brand +
-        ' + ' +
-        p.last4 +
-        ' + ' +
-        p.funding;
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({
-        message: error.message,
-      });
-    }
-  }
+  orderBody.coupon = await getUniqueCoupon();
 
   if (orderBody.paymentMethod) delete orderBody.paymentId;
   if (orderBody.total) delete orderBody.total;
@@ -60,25 +52,27 @@ router.post('/', [auth], async (req, res) => {
   const order = new Order({
     userId: orderBody.userId,
     name: orderBody.name,
-    useremail: orderBody.useremail,
-    profilePic: orderBody.profilePic,
-    address: orderBody.address,
-    city: orderBody.city,
-    country: orderBody.country,
-    postalCode: orderBody.postalCode,
+    email: orderBody.email,
     phone: orderBody.phone,
-    paymentMethod: orderBody.paymentMethod,
-    cartItems: orderBody.cartItems,
+    brandId: orderBody.brandId,
+    bundleId: orderBody.bundleId,
+    bundleName: orderBody.bundleName,
+    brandCategory: orderBody.brandCategory,
+    offerPrice: orderBody.offerPrice,
+    offerDetail: orderBody.offerDetail,
     orderStatus: orderBody.orderStatus,
+    coupon: orderBody.coupon,
 
     publishDate: moment().toJSON(),
   });
   await order.save();
 
-  res.send({ order, payment });
+  res.send(order);
 });
 
 router.put('/:id', [auth], async (req, res) => {
+  const orderBody = req.body;
+  
   const { error } = validate(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
@@ -87,18 +81,18 @@ router.put('/:id', [auth], async (req, res) => {
   const order = await Order.findByIdAndUpdate(
     req.params.id,
     {
-      userId: req.body.userId,
-      name: req.body.name,
-      useremail: req.body.useremail,
-      profilePic: req.body.profilePic,
-      address: req.body.address,
-      city: req.body.city,
-      country: req.body.country,
-      postalCode: req.body.postalCode,
-      phone: req.body.phone,
-      paymentMethod: req.body.paymentMethod,
-      cartItems: req.body.cartItems,
-      orderStatus: req.body.orderStatus,
+      userId: orderBody.userId,
+      name: orderBody.name,
+      email: orderBody.email,
+      phone: orderBody.phone,
+      brandId: orderBody.brandId,
+      bundleId: orderBody.bundleId,
+      bundleName: orderBody.bundleName,
+      brandCategory: orderBody.brandCategory,
+      offerPrice: orderBody.offerPrice,
+      offerDetail: orderBody.offerDetail,
+      orderStatus: orderBody.orderStatus,
+      coupon: orderBody.coupon,
     },
     { new: true }
   );
@@ -125,6 +119,57 @@ router.get('/:id', validateObjectId, async (req, res) => {
     return res.status(404).send('The Order with the given ID was not found.');
 
   res.send(order);
+});
+
+router.post('/sendcoupon', async (req, res) => {
+  const requestedBody = req.body;
+
+  if (requestedBody.email === '') {
+    res.status(400).send('email required');
+  }
+
+  const user = await Order.findOne({
+    email: requestedBody.email,
+  });
+
+  if (user === null) {
+    console.error('Email not in database');
+    res.status(403).send('Email not in db');
+  } else {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: keys.email,
+        pass: keys.password,
+      },
+    });
+
+    const mailOptions = {
+      from: 'aqibasif4422@gamil.com',
+      to: `${user.email}`,
+      subject: 'OSHER - Your Coupon',
+      html:
+        '<h2>Congratulations.</h2><br/>' +
+        `<p>You are receiving this because you have won this coupon from <b>${requestedBody.brandName}</b> of <b>${requestedBody.offerPrice} USD.</b></p>` +
+        `<p>Your coupon code is:</p><br/> <h1  style="letter-spacing: 1px; font-size: 60px;">${requestedBody.coupon}</h1><br/>` +
+        '<h2>OSHER!</h2>',
+      // text:
+      //   'Congratulations.\n\n' +
+      //   `You are receiving this because you have won this coupon from ${requestedBody.brandName} of ${requestedBody.offerPrice} USD.\n\n` +
+      //   `Your coupon code is:\n\n ${requestedBody.coupon}\n\n\n` +
+      //   'OSHER!',
+    };
+
+    transporter.sendMail(mailOptions, (err, response) => {
+      if (err) {
+        console.error('there was an error: ', err);
+        res.status(403).send('Server error');
+      } else {
+        console.log('here is the res: ', response);
+        res.status(200).json('Coupon email sent');
+      }
+    });
+  }
 });
 
 module.exports = router;

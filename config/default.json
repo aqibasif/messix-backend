@@ -1,6 +1,6 @@
 {
   "jwtPrivateKey": "unsecureKey",
-  "db": "mongodb://localhost/beverix",
+  "db": "mongodb://localhost/osher",
   "port": "3800",
   "requiresAuth": false
 }

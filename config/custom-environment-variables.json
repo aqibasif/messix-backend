@@ -1,4 +1,4 @@
 {
   "jwtPrivateKey": "vidly_jwtPrivateKey",
-  "db": "beverix_db" 
+  "db": "osher_db" 
 }

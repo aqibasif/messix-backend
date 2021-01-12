@@ -132,6 +132,7 @@ router.put('/:id', auth, async (req, res) => {
     .send(user);
 });
 
+
 router.post('/forgotpasswordlink', async (req, res) => {
   if (req.body.email === '') {
     res.status(400).send('email required');
