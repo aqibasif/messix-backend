@@ -62,6 +62,9 @@ router.post('/', [auth], async (req, res) => {
     offerDetail: orderBody.offerDetail,
     orderStatus: orderBody.orderStatus,
     coupon: orderBody.coupon,
+    branches: orderBody.branches,
+    expiryDate: orderBody.expiryDate,
+  
 
     publishDate: moment().toJSON(),
   });
@@ -93,6 +96,8 @@ router.put('/:id', [auth], async (req, res) => {
       offerDetail: orderBody.offerDetail,
       orderStatus: orderBody.orderStatus,
       coupon: orderBody.coupon,
+      branches: orderBody.branches,
+      expiryDate: orderBody.expiryDate,
     },
     { new: true }
   );
@@ -149,7 +154,7 @@ router.post('/sendcoupon', async (req, res) => {
       to: `${user.email}`,
       subject: 'OSHER - Your Coupon',
       html:
-        '<h2>Congratulations.</h2><br/>' +
+        `<h2>Congratulations ${requestedBody.name}!</h2><br/>` +
         `<p>You are receiving this because you have won this coupon from <b>${requestedBody.brandName}</b> of <b>${requestedBody.offerPrice} USD.</b></p>` +
         `<p>Your coupon code is:</p><br/> <h1  style="letter-spacing: 1px; font-size: 60px;">${requestedBody.coupon}</h1><br/>` +
         '<h2>OSHER!</h2>',

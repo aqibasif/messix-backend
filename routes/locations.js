@@ -1,4 +1,4 @@
-const { Product, validate } = require('../models/product');
+const { Location, validate } = require('../models/location');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validateObjectId = require('../middleware/validateObjectId');
@@ -8,7 +8,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const products = await Product.find().select('-__v').sort('label');
+  const products = await Location.find().select('-__v').sort('label');
   res.send(products);
 });
 
@@ -18,57 +18,27 @@ router.post('/', [auth], async (req, res) => {
     return res.status(400).send(error.details[0].message);
   }
 
-  // const genre = await Genre.findById(req.body.categoryId);
-  // if (!genre) {
-  //   return res.status(400).send('Invalid Category.');
-  // }
-
-  const product = new Product({
-    name: req.body.name,
+  const location = new Location({
     brandId: req.body.brandId,
-    category: req.body.category,
-    inStock: req.body.inStock,
-    details: req.body.details,
-    description: req.body.description,
-    img: req.body.img,
-    offers: req.body.offers,
-    branches: req.body.branches,
-    expiryDate: req.body.expiryDate,
-
-    publishDate: moment().toJSON(),
+    locations: req.body.locations,
   });
-  await product.save();
+  await location.save();
 
-  res.send(product);
+  res.send(location);
 });
 
 router.put('/:id', [auth], async (req, res) => {
+ 
   const { error } = validate(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
 
-  // const genre = await Genre.findById(req.body.categoryId);
-  // if (!genre) {
-  //   return res.status(400).send('Invalid Category.');
-  // }
-
-  const product = await Product.findByIdAndUpdate(
-
+  const product = await Location.findByIdAndUpdate(
     req.params.id,
     {
-      name: req.body.name,
       brandId: req.body.brandId,
-      category: req.body.category,
-      inStock: req.body.inStock,
-      details: req.body.details,
-      description: req.body.description,
-      img: req.body.img,
-      offers: req.body.offers,
-      branches: req.body.branches,
-      expiryDate: req.body.expiryDate,
-  
-      publishDate: moment().toJSON(),
+      locations: req.body.locations,
     },
     { new: true }
   );
@@ -89,7 +59,8 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 });
 
 router.get('/:id', validateObjectId, async (req, res) => {
-  const product = await Product.findById(req.params.id).select('-__v');
+  let product = await Location.findOne({ brandId: req.params.id });
+  // const product = await Product.findById(req.params.id).select('-__v');
 
   if (!product)
     return res.status(404).send('The product with the given ID was not found.');

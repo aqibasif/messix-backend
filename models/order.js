@@ -18,6 +18,8 @@ const Order = mongoose.model(
     offerDetail: { type: String, trim: true },
     orderStatus: { type: String, trim: true },
     coupon: { type: String, trim: true, unique: true },
+    expiryDate: { type: String },
+    branches: { type: Array, default: [] },
 
     publishDate: {
       type: String,
@@ -41,6 +43,8 @@ function validateOrder(order) {
     offerDetail: Joi.string().required(),
     orderStatus: Joi.string().required(),
     coupon: Joi.string().required(),
+    branches: Joi.array(),
+    expiryDate: Joi.string().required(),
   };
 
   return Joi.validate(order, schema);

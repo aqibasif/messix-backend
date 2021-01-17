@@ -6,14 +6,14 @@ const Product = mongoose.model(
   'Products',
 
   new mongoose.Schema({
-    label: {
+    name: {
       type: String,
       required: true,
       trim: true,
       minlength: 1,
       maxlength: 50,
     },
-    size: {
+    brandId: {
       type: String,
       required: true,
       trim: true,
@@ -27,11 +27,20 @@ const Product = mongoose.model(
       minlength: 1,
       maxlength: 50,
     },
-    price: {
-      type: Number,
+
+    details: {
+      type: String,
       required: true,
-      min: 0,
-      max: 50000,
+      trim: true,
+      minlength: 1,
+      maxlength: 2500,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 1,
+      maxlength: 2500,
     },
     inStock: {
       type: Number,
@@ -39,29 +48,36 @@ const Product = mongoose.model(
       min: 0,
       max: 1000,
     },
-    imageUrl: {
+    expiryDate: {
       type: String,
-      required: true,
-      trim: true,
       minlength: 1,
-      maxlength: 500000,
+      maxlength: 50000,
     },
+    branches: { type: Array, default: [] },
+    img: { type: Array, default: [] },
+    offers: { type: Array, default: [] },
+
     publishDate: {
       type: String,
       minlength: 1,
       maxlength: 50000,
-    }
+    },
   })
 );
 
 function validateProduct(product) {
   const schema = {
-    label: Joi.string().min(1).max(50).required(),
-    size: Joi.string().min(1).max(50).required(),
+    name: Joi.string().min(1).max(50).required(),
+    brandId: Joi.string().min(1).max(50).required(),
     category: Joi.string().min(1).max(50).required(),
-    price: Joi.number().min(0).required(),
     inStock: Joi.number().min(0).required(),
-    imageUrl: Joi.string().min(1).required(),
+    details: Joi.string().min(1).required(),
+    description: Joi.string().min(1).required(),
+    expiryDate: Joi.string().required(),
+    img: Joi.array().required(),
+    offers: Joi.array(),
+    branches: Joi.array(),
+    
   };
 
   return Joi.validate(product, schema);

@@ -6,12 +6,14 @@ const auth = require('../routes/auth');
 const error = require('../middleware/error');
 const fileupload = require('../routes/fileupload');
 const orders = require('../routes/orders');
+const locations = require('../routes/locations');
 
 module.exports = function (app) {
   app.use(express.json());
   app.use('/api/customers', customers);
   app.use('/api/products', products);
   app.use('/api/users', users);
+  app.use('/api/locations', locations);
   app.use('/api/auth', auth);
   app.use('/api/orders', orders);
   app.use('/api/fileupload', fileupload);
