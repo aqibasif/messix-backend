@@ -39,7 +39,9 @@ const userSchema = new mongoose.Schema({
     maxlength: 50000,
   },
   isAdmin: Boolean,
+  isActive: Boolean,
   isBrand: Boolean,
+  paymentExpiry: {type: Date},
   resetPasswordToken: {type: String},
   resetPasswordExpires: {type: Date},
 });
@@ -52,6 +54,7 @@ userSchema.methods.generateAuthToken = function () {
       email: this.email,
       isAdmin: this.isAdmin,
       isBrand: this.isBrand,
+      isActive: this.isActive,
       phone: this.phone,
       profilePic: this.profilePic,
       address: this.address,

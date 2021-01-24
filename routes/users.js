@@ -86,6 +86,50 @@ router.post('/', async (req, res) => {
     .send(_.pick(user, ['_id', 'name', 'email']));
 });
 
+router.post('/brand-singup', async (req, res) => {
+  const body = {
+    email: req.body.email,
+    name: req.body.name,
+    password: req.body.password,
+    profilePic: req.body.profilePic,
+  };
+
+  const { error } = validate(body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  let user = await User.findOne({ email: req.body.email });
+  if (user) return res.status(400).send('User already registered.');
+
+  // user = new User(_.pick(req.body, ['name', 'email', 'password']));
+
+  user = new User({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    profilePic: req.body.profilePic,
+    phone: req.body.phone,
+    address: req.body.address,
+    city: req.body.city,
+    country: req.body.country,
+    postalCode: req.body.postalCode,
+    paymentExpiry: req.body.paymentExpiry,
+    isActive: req.body.isActive,
+    isBrand: req.body.isBrand,
+
+    publishDate: moment().toJSON(),
+  });
+
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+  await user.save();
+
+  const token = user.generateAuthToken();
+  res
+    .header('x-auth-token', token)
+    .header('access-control-expose-headers', 'x-auth-token')
+    .send(_.pick(user, ['_id', 'name', 'email']));
+});
+
 router.put('/:id', auth, async (req, res) => {
   const { error } = validate(req.body);
 
@@ -115,6 +159,7 @@ router.put('/:id', auth, async (req, res) => {
       city: req.body.city,
       country: req.body.country,
       postalCode: req.body.postalCode,
+      // paymentExpiry: req.body.paymentExpiry
     },
     { new: true }
   );
@@ -132,6 +177,27 @@ router.put('/:id', auth, async (req, res) => {
     .send(user);
 });
 
+router.post('/updatepayment', async (req, res) => {
+  if (req.body.email === '') {
+    res.status(400).send('email required');
+  }
+
+  const user = await User.findOne({
+    _id: req.body._id,
+  });
+
+  if (user === null) {
+    console.error('Email not in database');
+    res.status(403).send('Email not in db');
+  } else {
+    await user.updateOne({
+      isActive: req.body.isActive,
+      paymentExpiry: req.body.paymentExpiry,
+    });
+
+    res.send(user);
+  }
+});
 
 router.post('/forgotpasswordlink', async (req, res) => {
   if (req.body.email === '') {
@@ -160,19 +226,18 @@ router.post('/forgotpasswordlink', async (req, res) => {
       },
     });
 
-    
     const mailOptions = {
       from: 'aqibasif4422@gamil.com',
       to: `${user.email}`,
       subject: 'BEVERIX - Link to reset password',
       text:
-      'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-      'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
-      `https://beverix.vercel.app/reset/${token}\n\n` +
-      'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' +
-      'Beverix!',
+        'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+        'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
+        `https://beverix.vercel.app/reset/${token}\n\n` +
+        'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' +
+        'Beverix!',
     };
-    
+
     transporter.sendMail(mailOptions, (err, response) => {
       if (err) {
         console.error('there was an error: ', err);
