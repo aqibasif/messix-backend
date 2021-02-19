@@ -155,7 +155,7 @@ router.post('/sendcoupon', async (req, res) => {
       subject: 'OSHER - Your Coupon',
       html:
         `<h2>Congratulations ${requestedBody.name}!</h2><br/>` +
-        `<p>You are receiving this because you have won this coupon from <b>${requestedBody.brandName}</b> of <b>${requestedBody.offerPrice} USD.</b></p>` +
+        `<p>You are receiving this because you have won this coupon from <b>${requestedBody.bundleName}</b> of <b>${requestedBody.offerPrice} USD.</b></p>` +
         `<p>Your coupon code is:</p><br/> <h1  style="letter-spacing: 1px; font-size: 60px;">${requestedBody.coupon}</h1><br/>` +
         '<h2>OSHER!</h2>',
       // text:

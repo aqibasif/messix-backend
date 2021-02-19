@@ -131,7 +131,19 @@ router.post('/brand-singup', async (req, res) => {
 });
 
 router.put('/:id', auth, async (req, res) => {
-  const { error } = validate(req.body);
+  const obj = {
+    profilePic: req.body.profilePic,
+    email: req.body.email,
+    password: req.body.password,
+    name: req.body.name,
+    phone: req.body.phone,
+    address: req.body.address,
+    city: req.body.city,
+    country: req.body.country,
+    postalCode: req.body.postalCode,
+  };
+
+  const { error } = validate(obj);
 
   if (error) {
     return res.status(400).send(error.details[0].message);
@@ -147,22 +159,9 @@ router.put('/:id', auth, async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password, salt);
   }
 
-  user = await User.findByIdAndUpdate(
-    req.params.id,
-    {
-      profilePic: req.body.profilePic,
-      email: req.body.email,
-      password: req.body.password,
-      name: req.body.name,
-      phone: req.body.phone,
-      address: req.body.address,
-      city: req.body.city,
-      country: req.body.country,
-      postalCode: req.body.postalCode,
-      // paymentExpiry: req.body.paymentExpiry
-    },
-    { new: true }
-  );
+  if (req.body.trips) obj.trips = req.body.trips;
+
+  user = await User.findByIdAndUpdate(req.params.id, obj, { new: true });
 
   if (!user)
     return res
@@ -193,6 +192,7 @@ router.post('/updatepayment', async (req, res) => {
     await user.updateOne({
       isActive: req.body.isActive,
       paymentExpiry: req.body.paymentExpiry,
+      payment: req.body.payment,
     });
 
     res.send(user);
@@ -229,13 +229,13 @@ router.post('/forgotpasswordlink', async (req, res) => {
     const mailOptions = {
       from: 'aqibasif4422@gamil.com',
       to: `${user.email}`,
-      subject: 'BEVERIX - Link to reset password',
+      subject: 'OSHER - Link to reset password',
       text:
         'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
         'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
-        `https://beverix.vercel.app/reset/${token}\n\n` +
+        `https://osher.vercel.app/reset/${token}\n\n` +
         'If you did not request this, please ignore this email and your password will remain unchanged.\n\n' +
-        'Beverix!',
+        'OSHER TPLAY!',
     };
 
     transporter.sendMail(mailOptions, (err, response) => {

@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
   address: { type: String },
   city: { type: String, trim: true },
   country: { type: String, trim: true },
+  trips: { type: String, trim: true },
   postalCode: { type: String, trim: true },
 
   publishDate: {
@@ -42,6 +43,7 @@ const userSchema = new mongoose.Schema({
   isActive: Boolean,
   isBrand: Boolean,
   paymentExpiry: {type: Date},
+  payment: {type: String},
   resetPasswordToken: {type: String},
   resetPasswordExpires: {type: Date},
 });
@@ -59,6 +61,10 @@ userSchema.methods.generateAuthToken = function () {
       profilePic: this.profilePic,
       address: this.address,
       city: this.city,
+      country: this.country,
+      trips: this.trips,
+      postalCode: this.postalCode,
+    
     },
     config.get('jwtPrivateKey')
   );
