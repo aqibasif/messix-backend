@@ -157,6 +157,7 @@ router.put('/:id', auth, async (req, res) => {
   if (req.body.password.length < 40 && !req.body.password.startsWith('$2')) {
     const salt = await bcrypt.genSalt(10);
     req.body.password = await bcrypt.hash(req.body.password, salt);
+    obj.password = req.body.password;
   }
 
   if (req.body.trips) obj.trips = req.body.trips;
