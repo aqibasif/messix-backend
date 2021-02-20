@@ -64,7 +64,6 @@ router.post('/', [auth], async (req, res) => {
     coupon: orderBody.coupon,
     branches: orderBody.branches,
     expiryDate: orderBody.expiryDate,
-  
 
     publishDate: moment().toJSON(),
   });
@@ -75,7 +74,7 @@ router.post('/', [auth], async (req, res) => {
 
 router.put('/:id', [auth], async (req, res) => {
   const orderBody = req.body;
-  
+
   const { error } = validate(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
@@ -154,10 +153,23 @@ router.post('/sendcoupon', async (req, res) => {
       to: `${user.email}`,
       subject: 'OSHER - Your Coupon',
       html:
-        `<h2>Congratulations ${requestedBody.name}!</h2><br/>` +
+        '<div style="background-color: yellow; color: black; padding:  10px;">' +
+        '<div style="width: 100%; text-align: center;"><img style="width: 180px;" src="cid:unique@kreata.ee"/></div>' +
+        `<h2>Congratulations, ${requestedBody.name}!</h2><br/>` +
         `<p>You are receiving this because you have won this coupon from <b>${requestedBody.bundleName}</b> of <b>${requestedBody.offerPrice} USD.</b></p>` +
         `<p>Your coupon code is:</p><br/> <h1  style="letter-spacing: 1px; font-size: 60px;">${requestedBody.coupon}</h1><br/>` +
-        '<h2>OSHER!</h2>',
+        '<h2>OSHER!</h2>' +
+        '</div>',
+      attachments: [
+        {
+          filename: 'logo2.png',
+          path: 'https://osher.vercel.app/img/logo2.png',
+          // path:
+          //   '/Users/AqibAsif/React JS Projects/Osher Tplay/osher/public/img/logo2.png',
+          // path: path.join(__dirname ,'../../osher/public/img/logo2.png'),
+          cid: 'unique@kreata.ee', //same cid value as in the html img src
+        },
+      ],
       // text:
       //   'Congratulations.\n\n' +
       //   `You are receiving this because you have won this coupon from ${requestedBody.brandName} of ${requestedBody.offerPrice} USD.\n\n` +
