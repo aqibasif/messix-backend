@@ -153,7 +153,7 @@ router.post('/sendcoupon', async (req, res) => {
       to: `${user.email}`,
       subject: 'OSHER - Your Coupon',
       html:
-        '<div style="background-color: yellow; color: black; padding:  10px;">' +
+        '<div style="padding:  10px;">' +
         '<div style="width: 100%; text-align: center;"><img style="width: 180px;" src="cid:unique@kreata.ee"/></div>' +
         `<h2>Congratulations, ${requestedBody.name}!</h2><br/>` +
         `<p>You are receiving this because you have won this coupon from <b>${requestedBody.bundleName}</b> of <b>${requestedBody.offerPrice} USD.</b></p>` +
