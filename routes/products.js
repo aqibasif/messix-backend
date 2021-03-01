@@ -34,6 +34,7 @@ router.post('/', [auth], async (req, res) => {
     offers: req.body.offers,
     branches: req.body.branches,
     expiryDate: req.body.expiryDate,
+    video: req.body.video,
 
     publishDate: moment().toJSON(),
   });
@@ -67,6 +68,7 @@ router.put('/:id', [auth], async (req, res) => {
       offers: req.body.offers,
       branches: req.body.branches,
       expiryDate: req.body.expiryDate,
+      video: req.body.video,
   
       publishDate: moment().toJSON(),
     },

@@ -20,6 +20,11 @@ const Video = mongoose.model(
       minlength: 1,
       maxlength: 50,
     },
+    videoUrl: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     views: {
       type: Number,
       required: true,
@@ -38,6 +43,7 @@ function validateVideo(video) {
     name: Joi.string().min(1).max(50).required(),
     category: Joi.string().min(1).max(50).required(),
     views: Joi.number().min(0).required(),    
+    videoUrl: Joi.string().min(0).required(),    
   };
 
   return Joi.validate(video, schema);

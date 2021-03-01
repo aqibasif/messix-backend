@@ -53,6 +53,9 @@ const Product = mongoose.model(
       minlength: 1,
       maxlength: 50000,
     },
+video: {
+      type: String,
+    },
     branches: { type: Array, default: [] },
     img: { type: Array, default: [] },
     offers: { type: Array, default: [] },
@@ -74,10 +77,10 @@ function validateProduct(product) {
     details: Joi.string().min(1).required(),
     description: Joi.string().min(1).required(),
     expiryDate: Joi.string().required(),
+    video: Joi.string(),
     img: Joi.array().required(),
     offers: Joi.array(),
     branches: Joi.array(),
-    
   };
 
   return Joi.validate(product, schema);

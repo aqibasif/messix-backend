@@ -22,6 +22,7 @@ router.post('/', [auth], async (req, res) => {
     name: req.body.name,
     category: req.body.category,
     views: req.body.views,
+    videoUrl: req.body.videoUrl,
 
     publishDate: moment().toJSON(),
   });
@@ -42,6 +43,7 @@ router.put('/:id', [auth], async (req, res) => {
       name: req.body.name,
       category: req.body.category,
       views: req.body.views,
+      videoUrl: req.body.videoUrl,
     },
     { new: true }
   );
