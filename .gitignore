@@ -2,7 +2,6 @@
 node_modules/
 logfile.log
 
- config/dev.json
 
 
 

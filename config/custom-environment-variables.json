@@ -1,6 +1,6 @@
 {
-  "jwtPrivateKey": "vidly_jwtPrivateKey",
-  "db": "osher_db" 
+  "jwtPrivateKey": "approcket_jwtPrivateKey",
+  "db": "approcket_db" 
 }
 
 

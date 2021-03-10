@@ -1,6 +1,6 @@
 {
   "jwtPrivateKey": "unsecureKey",
-  "db": "mongodb://localhost/osher",
+  "db": "mongodb://localhost/approcket",
   "port": "3800",
   "requiresAuth": false
 }

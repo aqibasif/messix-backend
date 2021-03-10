@@ -4,16 +4,10 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: {
+  username: {
     type: String,
     required: true,
-    minlength: 2,
-    maxlength: 50,
-  },
-  email: {
-    type: String,
-    required: true,
-    minlength: 5,
+    minlength: 1,
     maxlength: 255,
     unique: true,
   },
@@ -23,48 +17,19 @@ const userSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 1024,
   },
-  profilePic: {
-    type: String,
-    trim: true,
-  },
-  phone: { type: String, trim: true },
-  address: { type: String },
-  city: { type: String, trim: true },
-  country: { type: String, trim: true },
-  trips: { type: String, trim: true },
-  postalCode: { type: String, trim: true },
-
+ 
   publishDate: {
     type: String,
     minlength: 1,
     maxlength: 50000,
   },
-  isAdmin: Boolean,
-  isActive: Boolean,
-  isBrand: Boolean,
-  paymentExpiry: {type: Date},
-  payment: {type: String},
-  resetPasswordToken: {type: String},
-  resetPasswordExpires: {type: Date},
 });
 
 userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign(
     {
       _id: this._id,
-      name: this.name,
-      email: this.email,
-      isAdmin: this.isAdmin,
-      isBrand: this.isBrand,
-      isActive: this.isActive,
-      phone: this.phone,
-      profilePic: this.profilePic,
-      address: this.address,
-      city: this.city,
-      country: this.country,
-      trips: this.trips,
-      postalCode: this.postalCode,
-    
+      username: this.username,    
     },
     config.get('jwtPrivateKey')
   );
@@ -75,15 +40,8 @@ const User = mongoose.model('User', userSchema);
 
 function validateUser(user) {
   const schema = {
-    name: Joi.string().min(2).max(50).required(),
-    email: Joi.string().min(5).max(255).required().email(),
+    username: Joi.string().min(1).max(255).required(),
     password: Joi.string().min(5).max(255).required(),
-    phone: Joi.string(),
-    address: Joi.string(),
-    city: Joi.string(),
-    country: Joi.string(),
-    postalCode: Joi.string(),
-    profilePic: Joi.string().min(1),
   };
 
   return Joi.validate(user, schema);
