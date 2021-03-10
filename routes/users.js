@@ -7,7 +7,7 @@ const moment = require('moment');
 const router = express.Router();
 
 router.get('/', auth, async (req, res) => {
-  const users = await User.find().select('-__v').sort();
+  const users = await User.find().select('-__v').sort('username');
   res.send(users);
 });
 
