@@ -1,6 +1,6 @@
 {
-  "jwtPrivateKey": "approcket_jwtPrivateKey",
-  "db": "approcket_db" 
+  "jwtPrivateKey": "messix_jwtPrivateKey",
+  "db": "messix_db" 
 }
 
 

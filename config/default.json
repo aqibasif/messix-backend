@@ -1,6 +1,6 @@
 {
   "jwtPrivateKey": "unsecureKey",
-  "db": "mongodb://localhost/approcket",
+  "db": "mongodb://localhost/messix",
   "port": "3800",
   "requiresAuth": false
 }

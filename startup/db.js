@@ -8,8 +8,9 @@ module.exports = function () {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    dbName: 'messix'
   };
 
-  mongoose.connect(db, opt).then(() => winston.info(`Connected to ${db}...`));
+  mongoose.connect(db, opt).then(() => winston.info(`✅ Connected to ${db}...`));
 };
